@@ -63,8 +63,8 @@ fun AmalApp() {
         ) { pad ->
             Box(Modifier.fillMaxSize().padding(pad)) {
                 when(tab) {
-                    0 -> HomeScreen(amalList = amals, checked = checked, onCheck = { id, v -> checked = checked.toMutableSet().apply { if(v) add(id) else remove(id) }; store.saveChecked(todayKey(), checked) }, onOpenAmal = { tab = 1 })
-                    1 -> DailyScreen(amalList = amals, checked = checked, onCheck = { id, v -> checked = checked.toMutableSet().apply { if(v) add(id) else remove(id) }; store.saveChecked(todayKey(), checked) }, onEdit = { editing = it; showEditor = true }, onDelete = { a -> amals = amals.filterNot { it.id == a.id }; store.saveAmals(amals) })
+                    0 -> HomeScreen(amalList = amals, checked = checked, onCheck = { id, v -> if (v && id !in checked) { checked = checked.toMutableSet().apply { add(id) }; store.saveChecked(todayKey(), checked) } }, onOpenAmal = { tab = 1 })
+                    1 -> DailyScreen(amalList = amals, checked = checked, onCheck = { id, v -> if (v && id !in checked) { checked = checked.toMutableSet().apply { add(id) }; store.saveChecked(todayKey(), checked) } }, onEdit = { editing = it; showEditor = true }, onDelete = { a -> amals = amals.filterNot { it.id == a.id }; store.saveAmals(amals) })
                     2 -> CounterScreen(counters = counters, onChange = { name, value -> counters = counters.map { if(it.name == name) it.copy(value = value.coerceAtLeast(0)) else it }; store.saveCounters(counters) }, onAdd = { name -> counters = counters + Counter(name,0); store.saveCounters(counters) })
                     3 -> MuhasabahScreen(store)
                     4 -> SettingsScreen(amalList = amals, onEdit = { editing = it; showEditor = true }, onDelete = { a -> amals = amals.filterNot { it.id == a.id }; store.saveAmals(amals) }, onReset = { amals = Store.defaultAmals(); store.saveAmals(amals) })
@@ -99,7 +99,7 @@ fun AmalApp() {
 
 @Composable fun AmalRow(a: Amal, done:Boolean, toggle:()->Unit, edit:(()->Unit)?, delete:(()->Unit)? = null) {
     Card(shape=RoundedCornerShape(14.dp)) { Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment=Alignment.CenterVertically) {
-        Checkbox(checked=done, onCheckedChange={ toggle() }); Column(Modifier.weight(1f)) { Text(a.title, fontWeight=FontWeight.SemiBold); if(a.description.isNotBlank()) Text(a.description, fontSize=12.sp, color=Color.Gray, maxLines=2); if(a.target.isNotBlank()) Text("লক্ষ্য: ${a.target}", fontSize=12.sp, color=Green) }
+        Checkbox(checked=done, onCheckedChange={ if (!done) toggle() }, enabled=!done); Column(Modifier.weight(1f)) { Text(a.title, fontWeight=FontWeight.SemiBold); if(a.description.isNotBlank()) Text(a.description, fontSize=12.sp, color=Color.Gray, maxLines=2); if(a.target.isNotBlank()) Text("লক্ষ্য: ${a.target}", fontSize=12.sp, color=Green) }
         edit?.let { IconButton(onClick=it) { Icon(Icons.Default.Edit, "এডিট") } }; delete?.let { IconButton(onClick=it) { Icon(Icons.Default.Delete, "ডিলিট") } }
     } }
 }
