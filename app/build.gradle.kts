@@ -4,8 +4,8 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-android { namespace = "com.example.amolapp"; compileSdk = 35
-    defaultConfig { applicationId = "com.example.amolapp"; minSdk = 26; targetSdk = 35; versionCode = 1; versionName = "1.0" }
+android { namespace = "com.aziztanjim.amolapp"; compileSdk = 35
+    defaultConfig { applicationId = "com.aziztanjim.amolapp"; minSdk = 26; targetSdk = 35; versionCode = 1; versionName = "1.0" }
 }
 
 kotlin { jvmToolchain(17) }
